@@ -9,24 +9,19 @@ pipeline {
 
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud secret
-        SNYK_CFG_HOME = '/tmp/.snyk'  // Avoid EACCES error from snyk
     }
 
     stages {
-        stage('Install Snyk') {
+        stage('Install Tools') {
             steps {
                 sh '''
-                    npm install -g snyk
-                    mkdir -p $SNYK_CFG_HOME
+                    npm install -g nyc
                 '''
             }
         }
         stage('NPM Audit') {
             steps {
-                sh '''
-                    mkdir -p $SNYK_CFG_HOME
-                    snyk test || true
-                ''' // This will show known CVEs in the output
+                sh 'npm audit || true' // This will show known CVEs in the output
             }
         }
         stage('Run Tests') {
@@ -37,12 +32,7 @@ pipeline {
         stage('Generate Coverage Report') {
             steps {
                 // Ensure coverage report exists
-                sh '''
-                    npm install -g nyc
-                    mkdir -p $SNYK_CFG_HOME
-                    nyc --reporter=lcov snyk test || true
-                    npx nyc report --reporter=lcov
-                ''' 
+                 sh 'npm run coverage || true'
             }
         }
 
