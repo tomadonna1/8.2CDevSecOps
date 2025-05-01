@@ -8,8 +8,8 @@ pipeline {
     
 
     environment {
-        SONAR_TOKEN = credentials('SONAR_TOKEN')
-        SNYK_CFG_HOME = '/tmp/.snyk'
+        SONAR_TOKEN = credentials('SONAR_TOKEN') // SonarCloud secret
+        SNYK_CFG_HOME = '/tmp/.snyk'  // Avoid EACCES error from snyk
     }
 
     stages {
@@ -23,7 +23,10 @@ pipeline {
         }
         stage('NPM Audit') {
             steps {
-                sh 'npm audit || true' // This will show known CVEs in the output
+                sh '''
+                    mkdir -p $SNYK_CFG_HOME
+                    snyk test || true
+                ''' // This will show known CVEs in the output
             }
         }
         stage('Run Tests') {
