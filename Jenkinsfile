@@ -8,13 +8,17 @@ pipeline {
     
 
     environment {
-        SONAR_TOKEN = credentials('SONAR_TOKEN')  // required for SonarCloud stage
+        SONAR_TOKEN = credentials('SONAR_TOKEN')
+        SNYK_CFG_HOME = '/tmp/.snyk'
     }
 
     stages {
         stage('Install Snyk') {
             steps {
-                sh 'npm install -g snyk'
+                sh '''
+                    npm install -g snyk
+                    mkdir -p $SNYK_CFG_HOME
+                '''
             }
         }
         stage('NPM Audit') {
@@ -30,7 +34,12 @@ pipeline {
         stage('Generate Coverage Report') {
             steps {
                 // Ensure coverage report exists
-                sh 'npm run coverage || true' 
+                sh '''
+                    npm install -g nyc
+                    mkdir -p $SNYK_CFG_HOME
+                    nyc --reporter=lcov snyk test || true
+                    npx nyc report --reporter=lcov
+                ''' 
             }
         }
 
