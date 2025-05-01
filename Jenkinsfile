@@ -9,17 +9,18 @@ pipeline {
     stages {
         stage('NPM Audit') {
             steps {
-                sh 'npm audit || true'
+                sh 'npm audit || true' // This will show known CVEs in the output
             }
         }
         stage('Run Tests') {
             steps {
-                sh 'npm test || true'
+                sh 'npm test || true' // Allows pipeline to continue despite test failures
             }
         }
-        stage('Coverage') {
+        stage('Generate Coverage Report') {
             steps {
-                sh 'npm run coverage || true' // This will show known CVEs in the output
+                // Ensure coverage report exists
+                sh 'npm run coverage || true' 
             }
         }
     }
