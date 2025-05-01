@@ -5,12 +5,18 @@ pipeline {
             args '--entrypoint="" -u root'
         } 
     }
+    
 
     environment {
         SONAR_TOKEN = credentials('SONAR_TOKEN')  // required for SonarCloud stage
     }
 
     stages {
+        stage('Install Snyk') {
+            steps {
+                sh 'npm install -g snyk'
+            }
+        }
         stage('NPM Audit') {
             steps {
                 sh 'npm audit || true' // This will show known CVEs in the output
