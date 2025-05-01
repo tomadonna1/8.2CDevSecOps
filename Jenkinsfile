@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'tomadonna/devsecops'
-            args '-u root'
+            args '--entrypoint="" -u root'
         }
     }
 
