@@ -3,7 +3,7 @@ pipeline {
         docker {
             image 'tomadonna/devsecops'
             args '--entrypoint="" -u root'
-        }
+        } 
     }
 
     stages {
